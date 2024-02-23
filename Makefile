@@ -23,6 +23,10 @@ run_ikeda:
 run_shapa:
 	poetry run python -m discord_bot shapa
 
+.PHONY: run_himari
+run_himari:
+	poetry run python -m discord_bot himari
+	
 .PHONY: generate_dataset
 generate_dataset:
 	poetry run python -m train_data_generator

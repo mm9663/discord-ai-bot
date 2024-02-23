@@ -2,7 +2,7 @@
 name = "discord_bot"
 version = "0.1.0"
 description = ""
-authors = ["1119-2916 <ti11192916@gmail.com>"]
+authors = ["mm9663 <bongore3145@me.com>"]
 readme = "README.md"
 
 [tool.poetry.dependencies]

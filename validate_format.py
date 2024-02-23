@@ -9,7 +9,7 @@ from collections import defaultdict
 openai.api_key = OPENAI_API_SECRET
 
 # 確認したいデータセットのパスを指定する
-fine_tuning_data_path = TRAIN_DATA_FILE_PATH["shapa_short"]
+fine_tuning_data_path = TRAIN_DATA_FILE_PATH["himari"]
 
 # デバッグ用
 # fine_tuning_data_path = "./sample.jsonl"

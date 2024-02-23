@@ -1,4 +1,4 @@
-from private.secrets import DISCORD_BOT_TOKEN, VC_CHANNEL_DICT
+from private.secrets import BOT_ID, DISCORD_BOT_TOKEN, VC_CHANNEL_DICT, EGOSA_LIST
 from ai.ai_client import AIClient
 from ai.ai_client_provider import get_ai_client
 from logging import getLogger, INFO, DEBUG
@@ -49,7 +49,9 @@ async def on_message(message):
         if not discord_client.user in message.mentions:
             return
         content_type: str = message.attachments[0].content_type
+        logger.info(f"{message.author} wants to send a message:")
         if content_type.startswith("image"):
+            logger.info(f"{message.author} wants to send a message:")
             logger.info(f"{message.author} sent a image: {message.attachments[0].url}")
             logger.info(f"reply to {chat_text}")
             await message.channel.send(ai_client.generate_reply_to_including_image(chat_text))
@@ -59,6 +61,7 @@ async def on_message(message):
             logger.info(f"{message.author} sent a {content_type}")
             return
 
+    logger.info(f"{message.author} wants to send a message:")
     # メッセージにURLが含まれる場合
     urls: list[str] = url_extractor.find_urls(chat_text)
     if len(urls) > 0:
@@ -73,6 +76,8 @@ async def on_message(message):
         return
 
     # 返事をする
+    
+    logger.info(f"{message.author} wants to send a message:")
     reply = ai_client.generate_reply(chat_text)
     logger.info(f"{message.author} sent a message: {chat_text}, response: {reply}")
 
@@ -97,6 +102,18 @@ def _is_reply(message, rate: int = 40) -> bool:
     # メンションであって、自分が含まれていない場合は無視する
     if len(message.mentions) > 0 and discord_client.user not in message.mentions:
         return False
+
+
+    if ai_client.bot_id == BOT_ID['himari']:
+        egosa_list = EGOSA_LIST['himari'] # = ["himari", "himaranai"...]
+        chat_text: str = message.content.replace(ai_client.bot_id, "")
+        for eg in egosa_list:
+            if chat_text.lower().find(eg) != -1:
+                author = message.author # message may be changed before logging
+                logger.info(f"{author} was successfully egosearched by {ai_client.bot_id}:")
+                logger.info(f"naming: {eg}")
+                logger.info(f"chat_text: {chat_text}")
+                return True
 
     # 40% の確率で返事をする
     return random.randint(1, 100) < rate

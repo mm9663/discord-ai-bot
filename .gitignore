@@ -4,3 +4,8 @@
 __pycache__/
 poetry.lock
 .venv/
+*.PNG
+*.zip
+*.jsonl
+output*.txt
+ext_test.py

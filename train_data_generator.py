@@ -62,13 +62,19 @@ def read_twitter_log() -> list[str]:
             result.append(line.replace("\n", ""))
     return result
 
+def read_ocr_log() -> list[str]:
+    result: list[str] = []
+    with open("./ocr/output.txt", encoding="utf-8") as f:
+        for line in f:
+            result.append(line.replace("\n", ""))
+    return result
 
 # fine-tuning 用の形式にデータを変換する
 def convert_to_fine_tuning_data(data: list[str]) -> list[str]:
-    prompt: str = PROMPTS["shapa"]
+    prompt: str = ""
     result: list[str] = []
     has_user = False
-    has_prompt = True
+    has_prompt = False
     for i in data:
         if not has_user and has_prompt:
             result.append('{"messages": [{"role": "system", "content":"' + prompt + '"}, {"role": "assistant", "content": "' + i + '"}]}')
@@ -85,15 +91,12 @@ def dump_to_file(data: list[str], f) -> None:
 
 def main():
     # 生成データの出力先を指定
-    train_data_path = TRAIN_DATA_FILE_PATH["shapa_short"]
+    train_data_path = TRAIN_DATA_FILE_PATH["himari"]
 
-    with open(train_data_path, "w") as f:
-        # json.dump(read_chat_log(), f, ensure_ascii=False)
-        # discord から読むほう
-        # dump_to_file(convert_to_fine_tuning_data(read_chat_log()), f)
+    with open(train_data_path, "w", encoding='utf-8') as f:
 
-        # twitter のログを読むほう
-        dump_to_file(convert_to_fine_tuning_data(read_twitter_log()), f)
+        # ocr のログ 
+        dump_to_file(convert_to_fine_tuning_data(read_ocr_log()), f)
 
 
 if __name__ == "__main__":

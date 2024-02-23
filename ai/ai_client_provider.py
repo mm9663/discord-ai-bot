@@ -3,6 +3,7 @@ from .kurobara_ai import KurobaraAI
 from .ikeda_ai import IkedaAI
 from .meu_ai import MeuAI
 from .shapa_ai import ShapaAI
+from .himari_ai import HimariAI
 
 
 def get_ai_client(client_name) -> AIClient:
@@ -14,5 +15,7 @@ def get_ai_client(client_name) -> AIClient:
         return ShapaAI()
     elif client_name == "meu":
         return MeuAI()
+    elif client_name == "himari":
+        return HimariAI()
     else:
         raise ValueError(f"Invalid client name: {client_name}")
