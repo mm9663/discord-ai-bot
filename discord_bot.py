@@ -1,3 +1,4 @@
+import time
 from private.secrets import BOT_ID, DISCORD_BOT_TOKEN, VC_CHANNEL_DICT, EGOSA_LIST
 from ai.ai_client import AIClient
 from ai.ai_client_provider import get_ai_client
@@ -8,6 +9,26 @@ import discord
 import random
 import json
 import sys
+
+
+class EgosaTimer:
+    a1: time = None
+    a2: time = None
+
+    def get_before_time(self):
+        return self.a1
+    
+    def is_egosable(self):
+        self.a2 = time.time()
+        if self.a1 is None:
+            self.a1 = self.a2
+            return True
+        delta = self.a2 - self.a1
+        self.a1 = self.a2
+        if delta > 20:
+            return True
+        return False
+
 
 
 # ロガーの設定
@@ -23,7 +44,7 @@ discord_client = discord.Client(intents=intents)
 
 ai_client: AIClient = None
 url_extractor = URLExtract()
-
+egosaTimer = EgosaTimer()
 
 @discord_client.event
 async def on_ready():
@@ -110,6 +131,11 @@ def _is_reply(message, rate: int = 40) -> bool:
         for eg in egosa_list:
             if chat_text.lower().find(eg) != -1:
                 author = message.author # message may be changed before logging
+                if not egosaTimer.is_egosable():
+                    logger.info(f"{author} was not egosearched by {ai_client.bot_id}:")
+                    logger.info(f"ignored naming: {eg}")
+                    logger.info(f"ignored chat_text: {chat_text}")
+                    break
                 logger.info(f"{author} was successfully egosearched by {ai_client.bot_id}:")
                 logger.info(f"naming: {eg}")
                 logger.info(f"chat_text: {chat_text}")
