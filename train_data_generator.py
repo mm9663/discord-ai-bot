@@ -91,7 +91,7 @@ def dump_to_file(data: list[str], f) -> None:
 
 def main():
     # 生成データの出力先を指定
-    train_data_path = TRAIN_DATA_FILE_PATH["himari"]
+    train_data_path = TRAIN_DATA_FILE_PATH["shiroko"]
 
     with open(train_data_path, "w", encoding='utf-8') as f:
 

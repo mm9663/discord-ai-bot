@@ -11,25 +11,25 @@ import json
 import sys
 
 
-class EgosaTimer:
-    a1: time = None
-    a2: time = None
+class ReplyTimer:
+    
+    def __init__(self):
+        self.a1 = None
+        self.a2 = None
 
     def get_before_time(self):
         return self.a1
     
-    def is_egosable(self):
+    def is_replyable(self, limit=20):
         self.a2 = time.time()
         if self.a1 is None:
             self.a1 = self.a2
             return True
         delta = self.a2 - self.a1
         self.a1 = self.a2
-        if delta > 20:
+        if delta > limit:
             return True
         return False
-
-
 
 # ロガーの設定
 logging.basicConfig(level=INFO)
@@ -44,7 +44,8 @@ discord_client = discord.Client(intents=intents)
 
 ai_client: AIClient = None
 url_extractor = URLExtract()
-egosaTimer = EgosaTimer()
+egosa_timer = ReplyTimer()
+normal_reply_timer = ReplyTimer()
 
 @discord_client.event
 async def on_ready():
@@ -99,11 +100,12 @@ async def on_message(message):
     # 返事をする
     
     logger.info(f"{message.author} wants to send a message:")
-    reply = ai_client.generate_reply(chat_text)
+    reply = ai_client.generate_reply(chat_text, message.channel.id)
     logger.info(f"{message.author} sent a message: {chat_text}, response: {reply}")
 
     if len(reply) == 0:
         return
+    
     await message.channel.send(reply)
 
 
@@ -125,13 +127,13 @@ def _is_reply(message, rate: int = 40) -> bool:
         return False
 
 
-    if ai_client.bot_id == BOT_ID['himari']:
-        egosa_list = EGOSA_LIST['himari'] # = ["himari", "himaranai"...]
+    if ai_client.bot_id == BOT_ID['himari'] or ai_client.bot_id == BOT_ID['shiroko']:
+        egosa_list = EGOSA_LIST['himari'] if ai_client.bot_id == BOT_ID['himari'] else EGOSA_LIST['shiroko'] # = ["himari", "himaranai"...]
         chat_text: str = message.content.replace(ai_client.bot_id, "")
         for eg in egosa_list:
             if chat_text.lower().find(eg) != -1:
                 author = message.author # message may be changed before logging
-                if not egosaTimer.is_egosable():
+                if not egosa_timer.is_replyable():
                     logger.info(f"{author} was not egosearched by {ai_client.bot_id}:")
                     logger.info(f"ignored naming: {eg}")
                     logger.info(f"ignored chat_text: {chat_text}")
@@ -142,7 +144,7 @@ def _is_reply(message, rate: int = 40) -> bool:
                 return True
 
     # 40% の確率で返事をする
-    return random.randint(1, 100) < rate
+    return random.randint(1, 100) < rate if normal_reply_timer.is_replyable(5) else False
 
 
 # 全てのテキストチャンネルに投稿されたメッセージを収拾する

@@ -4,12 +4,12 @@ from private.secrets import BOT_ID, OPENAI_API_SECRET, MODEL_ID, PROMPTS
 from openai import OpenAI
 
 
-class HimariAI(AIClient):
-    prompt: str = PROMPTS["himari"]
+class ShirokoAI(AIClient):
+    prompt: str = PROMPTS["shiroko"]
 
     @property
     def bot_id(self) -> str:
-        return BOT_ID["himari"]
+        return BOT_ID["shiroko"]
 
     def __init__(self):
         self.client = OpenAI(api_key=OPENAI_API_SECRET)
@@ -23,12 +23,12 @@ class HimariAI(AIClient):
         elif len(message) < 4:
             return ""
         else:
-            # FIXME: 
+            # FIXME:
             msg = self.recent.get(channel_id, []).copy()
             msg.insert(0, {"role": "system", "content": self.prompt})
             msg.append({"role": "user", "content": message})
             completion = self.client.chat.completions.create(
-                model=MODEL_ID["himari"],
+                model=MODEL_ID["shiroko"],
                 temperature=1,
                 messages=msg
             )

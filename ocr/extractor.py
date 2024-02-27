@@ -102,7 +102,7 @@ def extract_from_screenshots(input_path: str) -> list[str]:
     results = []
     files = []
     ocr = OCRTool(tesseract_cmd=r'C:\Program Files\Tesseract-OCR\tesseract.exe')
-    files += glob.glob(os.path.join(input_path, r'.\**\*.png'))
+    files += glob.glob(os.path.join(input_path, r'.\**\*.(png|PNG)'), recursive=True)
     print(files)
 
     for file in files:

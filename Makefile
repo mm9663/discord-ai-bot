@@ -26,6 +26,11 @@ run_shapa:
 .PHONY: run_himari
 run_himari:
 	poetry run python -m discord_bot himari
+
+.PHONY: run_shiroko
+run_shiroko:
+	poetry run python -m discord_bot shiroko
+	
 	
 .PHONY: generate_dataset
 generate_dataset:
